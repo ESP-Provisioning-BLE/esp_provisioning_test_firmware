@@ -1,0 +1,41 @@
+name: Build
+
+# Build-only CI: compiles the firmware for the ESP32-C6 on every push and pull
+# request. There is no flashing and no hardware-in-the-loop here; this only
+# proves the project keeps compiling. The ESP-IDF version is pinned (see
+# AGENTS.md for why v5.5.4 specifically).
+on:
+  push:
+  pull_request:
+
+# A newer push on the same ref cancels an in-flight build for that ref.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Default configuration: the BSSID test feature is ON.
+          - name: "esp32c6 · TESTFW_APPLY_BSSID=y (default)"
+            sdkconfig: "sdkconfig.defaults"
+          # Stock behaviour: the BSSID test feature is OFF. Proves both paths
+          # keep compiling.
+          - name: "esp32c6 · TESTFW_APPLY_BSSID=n (stock)"
+            sdkconfig: "sdkconfig.defaults;sdkconfig.ci.no_bssid"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          # Single pinned ESP-IDF version. Not a version matrix (see AGENTS.md).
+          esp_idf_version: v5.5.4
+          target: esp32c6
+          path: '.'
+          command: idf.py -DIDF_TARGET=esp32c6 -DSDKCONFIG_DEFAULTS="${{ matrix.sdkconfig }}" build

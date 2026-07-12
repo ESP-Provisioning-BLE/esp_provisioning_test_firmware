@@ -1,0 +1,4 @@
+# CI-only override chained after sdkconfig.defaults. Builds the firmware with
+# the BSSID test feature turned OFF, so CI proves it still compiles as the
+# stock (unpatched) behaviour, not only in its default (patched) form.
+CONFIG_TESTFW_APPLY_BSSID=n

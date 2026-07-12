@@ -1,0 +1,22 @@
+# ---- ESP-IDF build output ---------------------------------------------------
+build/
+sdkconfig
+sdkconfig.old
+
+# Components pulled in by the IDF Component Manager at build time.
+managed_components/
+dependencies.lock
+
+# ---- Editor / OS noise ------------------------------------------------------
+.DS_Store
+*.swp
+
+# ---- Agentic config ---------------------------------------------------------
+# Agentic config is versioned in THIS repo. This overrides the user's global
+# `**/.claude/` ignore so subagents, slash commands and shared settings travel
+# with the repo (and every worktree gets them with no setup). Only local and
+# sensitive bits stay ignored.
+!.claude/
+!.claude/**
+.claude/settings.local.json
+.claude/*.local.*

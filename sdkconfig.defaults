@@ -1,0 +1,31 @@
+# =============================================================================
+# Default sdkconfig for esp_provisioning_test_firmware.
+#
+# These values are applied automatically by the build system, so the firmware
+# comes up correctly configured WITHOUT anyone having to open
+# `idf.py menuconfig`. They encode the two settings that make this firmware a
+# valid target for the Dart package `esp_provisioning_ble`:
+#
+#   1. BLE transport (not SoftAP): the package speaks BLE.
+#   2. Protocomm Security version 1: the package does NOT support Security 2
+#      yet (esp_provisioning_ble#30). The upstream example defaults to
+#      Security 2, so leaving the default would make the handshake never
+#      complete and look like a package bug. See README.md / AGENTS.md.
+# =============================================================================
+
+# --- Provisioning transport: BLE (upstream default for non-S2 targets, forced
+#     here so it is explicit and does not depend on the target) ---------------
+CONFIG_EXAMPLE_PROV_TRANSPORT_BLE=y
+
+# --- Provisioning security: version 1 (NOT the example's default of v2) ------
+CONFIG_EXAMPLE_PROV_SECURITY_VERSION_1=y
+
+# --- Bluetooth / BLE host stack (NimBLE) -------------------------------------
+CONFIG_BT_ENABLED=y
+CONFIG_BT_NIMBLE_ENABLED=y
+
+# --- Custom partition table: the BLE image is larger than the default app
+#     slot, so use the bundled partitions.csv --------------------------------
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_PARTITION_TABLE_FILENAME="partitions.csv"

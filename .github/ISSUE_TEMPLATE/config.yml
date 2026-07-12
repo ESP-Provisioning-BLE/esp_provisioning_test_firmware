@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Issue with the esp_provisioning_ble Dart package
+    url: https://github.com/ESP-Provisioning-BLE/esp_provisioning_ble/issues
+    about: >-
+      This repo is only a test target. If the bug or request is about the Dart
+      package itself (its API, parsing, exceptions...), please open it there.
+  - name: General ESP-IDF provisioning question
+    url: https://github.com/espressif/esp-idf/tree/master/examples/provisioning/wifi_prov_mgr
+    about: >-
+      For how Wi-Fi provisioning works in general, start from the official
+      ESP-IDF example this firmware is based on.
+  - name: Espressif community forum
+    url: https://esp32.com/
+    about: >-
+      For broader ESP32 / ESP-IDF help that is not specific to testing this
+      package, the Espressif forum is the best place.
