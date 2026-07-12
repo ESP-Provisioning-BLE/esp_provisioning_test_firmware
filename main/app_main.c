@@ -118,10 +118,13 @@ static void event_handler(void* arg, esp_event_base_t event_base,
                 break;
             case WIFI_PROV_CRED_RECV: {
                 wifi_sta_config_t *wifi_sta_cfg = (wifi_sta_config_t *)event_data;
+                /* Do NOT log the password in plaintext: print its length only,
+                   so credentials cannot leak into shared logs or screenshots. */
                 ESP_LOGI(TAG, "Received Wi-Fi credentials"
-                         "\n\tSSID     : %s\n\tPassword : %s",
+                         "\n\tSSID     : %s\n\tPassword : <hidden, %u chars>",
                          (const char *) wifi_sta_cfg->ssid,
-                         (const char *) wifi_sta_cfg->password);
+                         (unsigned) strnlen((const char *) wifi_sta_cfg->password,
+                                            sizeof(wifi_sta_cfg->password)));
                 break;
             }
             case WIFI_PROV_CRED_FAIL: {
