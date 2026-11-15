@@ -1,0 +1,6 @@
+# CI-only override chained after sdkconfig.defaults. Builds the firmware with
+# protocomm Security 0 (plain text, no proof-of-possession) instead of the
+# default Security 1, to test Security0 in esp_provisioning_ble (PR #31).
+# Both lines are set so the choice cannot keep Security 1 from the defaults.
+CONFIG_EXAMPLE_PROV_SECURITY_VERSION_0=y
+# CONFIG_EXAMPLE_PROV_SECURITY_VERSION_1 is not set
