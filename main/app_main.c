@@ -426,6 +426,18 @@ void app_main(void)
 
         const char *username  = NULL;
 
+#elif CONFIG_EXAMPLE_PROV_SECURITY_VERSION_0
+        /* Security 0: plain-text communication, no proof-of-possession and no
+         * security parameters. Not offered by the upstream example; added by
+         * this test firmware to exercise Security0 in esp_provisioning_ble#31.
+         * Note that protocomm security 0 posts no PROTOCOMM_SECURITY_SESSION_EVENT,
+         * so the "Secured session established!" log never appears with it. */
+        wifi_prov_security_t security = WIFI_PROV_SECURITY_0;
+        const char *pop = NULL;
+        const char *username = NULL;
+        const void *sec_params = NULL;
+        ESP_LOGW(TAG, "Security 0: provisioning traffic is NOT encrypted (test only)");
+
 #elif CONFIG_EXAMPLE_PROV_SECURITY_VERSION_2
         wifi_prov_security_t security = WIFI_PROV_SECURITY_2;
         /* The username must be the same one, which has been used in the generation of salt and verifier */

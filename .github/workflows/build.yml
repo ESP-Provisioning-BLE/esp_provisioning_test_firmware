@@ -28,6 +28,10 @@ jobs:
           # keep compiling.
           - name: "esp32c6 · TESTFW_APPLY_BSSID=n (stock)"
             sdkconfig: "sdkconfig.defaults;sdkconfig.ci.no_bssid"
+          # Protocomm Security 0 (plain text, no PoP) instead of Security 1,
+          # to test Security0 in the package (esp_provisioning_ble#31).
+          - name: "esp32c6 · Security 0"
+            sdkconfig: "sdkconfig.defaults;sdkconfig.ci.sec0"
     steps:
       - uses: actions/checkout@v4
 

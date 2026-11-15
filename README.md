@@ -34,6 +34,18 @@ I (....) wifi_prov_mgr: Provisioning started with service name : PROV_XXXXXX
 
 `PROV_XXXXXX` (last three bytes of the board MAC) is the BLE name to scan for from the phone. Provision it with the package's example app; the proof-of-possession is `abcd1234`.
 
+### Security 0 variant
+
+To test Security 0 (plain text, no proof-of-possession, no encryption; [`esp_provisioning_ble#31`](https://github.com/ESP-Provisioning-BLE/esp_provisioning_ble/pull/31)), chain the `sdkconfig.ci.sec0` override after the defaults, or pick **Security version 0** under **Example Configuration → Protocomm security version** in `menuconfig`:
+
+```bash
+idf.py -DSDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ci.sec0" build
+```
+
+If a previous build left an `sdkconfig`, delete it first (or use a separate build directory and `-DSDKCONFIG=<dir>/sdkconfig`), because the defaults only apply to a fresh `sdkconfig`. With Security 0 there is no PoP to enter, the log warns `Security 0: provisioning traffic is NOT encrypted (test only)`, and the `Secured session established!` line does not appear (protocomm Security 0 posts no session event). Never use it outside testing.
+
+### Re-provisioning
+
 Once provisioned, the device stops advertising on the next boot. To test again from scratch: `idf.py -p <PORT> erase-flash` and re-flash, or build with `CONFIG_EXAMPLE_RESET_PROVISIONED=y` to wipe NVS on every boot.
 
 ## Test features

@@ -42,6 +42,8 @@ These are the exact things that are painful to rediscover by hand each time, so 
 
 1. **The example defaults to Security 2, which the package does not support yet (`esp_provisioning_ble#30`).** With Security 2 the handshake never completes and it looks like a package bug. `sdkconfig.defaults` forces `CONFIG_EXAMPLE_PROV_SECURITY_VERSION_1`. With Security 1 the proof-of-possession is hard-coded to `"abcd1234"` in `app_main.c`, which matches the value the package's own example pre-fills, so nothing has to be typed.
 
+   The security choice also offers **Security 0** (plain text, no PoP), which the upstream example does not: it is this repo's only change to the inherited "Example Configuration" menu, added to test Security0 in the package (`esp_provisioning_ble#31`). Build it by chaining `sdkconfig.ci.sec0` after the defaults. Protocomm Security 0 posts no `PROTOCOMM_SECURITY_SESSION_EVENT`, so the `Secured session established!` log never appears with it; that is expected, not a failure.
+
 2. **Upstream silently ignores the BSSID sent by the client.** The `wifi_provisioning` component parses and length-validates the BSSID in `components/wifi_provisioning/src/wifi_config.c` (into a `wifi_prov_config_set_data_t`), but its `set_config_handler` (`src/handlers.c`) only copies the SSID, password and scan method into `wifi_config_t.sta`; the BSSID and channel are dropped. By the time the official `WIFI_PROV_SET_STA_CONFIG` app event fires (`manager.c: wifi_prov_mgr_configure_sta`), the `wifi_config_t` no longer carries the client BSSID, and the config handlers are wired internally (`get_wifi_prov_handlers`), so the app event cannot recover it. This firmware restores the behaviour behind the `CONFIG_TESTFW_APPLY_BSSID` toggle (see below). Motivated by `esp_provisioning_ble#15`.
 
    **How the fix is wired** (`main/testfw_apply_bssid.c`, only compiled when the option is on): the linker flag `-Wl,--wrap=get_wifi_prov_handlers` lets us keep every upstream handler except `set_config_handler`, which we replace with a faithful copy that additionally copies the BSSID into `wifi_config_t.sta.bssid`, sets `bssid_set = true` and applies the channel. Nothing in `app_main.c` changes, so divergence from the example stays tiny. The opaque `wifi_prov_ctx_t` is completed to match the private definition in `handlers.c`; this is why the ESP-IDF version is pinned (a struct-layout change upstream would need this file revisited).
@@ -67,10 +69,11 @@ Current features:
 CMakeLists.txt            top-level project CMake (project name, minimal build)
 sdkconfig.defaults        forces BLE transport + Security 1 + NimBLE + partitions
 sdkconfig.ci.no_bssid     CI-only override: TESTFW_APPLY_BSSID=n
+sdkconfig.ci.sec0         CI-only override: protocomm Security 0 instead of 1
 partitions.csv            custom partition table (BLE image is large)
 main/
   app_main.c              provisioning app (from the upstream example)
-  Kconfig.projbuild       upstream "Example Configuration" menu + TESTFW menu
+  Kconfig.projbuild       upstream "Example Configuration" menu (+ Security 0) + TESTFW menu
   CMakeLists.txt          component registration
   idf_component.yml       managed deps (qrcode)
 .github/workflows/build.yml   build-only CI, pinned ESP-IDF v5.5.4, esp32c6
