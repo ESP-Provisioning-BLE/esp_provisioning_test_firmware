@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Protocomm Security 0 (plain text, no proof-of-possession) as a third choice of the provisioning security version, to test Security0 in the package ([esp_provisioning_ble#31](https://github.com/ESP-Provisioning-BLE/esp_provisioning_ble/pull/31)). Security 1 stays the default; the `sdkconfig.ci.sec0` override selects Security 0, and CI builds it as a separate variant.
+
 ## [0.1.0] - 2026-07-12
 
 ### Added
