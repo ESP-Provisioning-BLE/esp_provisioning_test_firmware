@@ -1,11 +1,13 @@
 menu "Example Configuration"
 
-    # NOTE: this menu is inherited verbatim from the upstream ESP-IDF example
+    # NOTE: this menu is inherited from the upstream ESP-IDF example
     # examples/provisioning/wifi_prov_mgr so that app_main.c keeps compiling
-    # against the same CONFIG_EXAMPLE_* symbols. The defaults that matter for
-    # this test firmware (BLE transport, Security version 1) are pinned in
-    # sdkconfig.defaults, not here. Test-firmware-specific options live in the
-    # separate "Test firmware features" menu below.
+    # against the same CONFIG_EXAMPLE_* symbols. Its only divergence from
+    # upstream is the EXAMPLE_PROV_SECURITY_VERSION_0 entry, which upstream
+    # does not offer. The defaults that matter for this test firmware (BLE
+    # transport, Security version 1) are pinned in sdkconfig.defaults, not
+    # here. Test-firmware-specific options live in the separate "Test firmware
+    # features" menu below.
 
     choice EXAMPLE_PROV_TRANSPORT
         bool "Provisioning Transport"
@@ -29,6 +31,19 @@ menu "Example Configuration"
         help
             Wi-Fi provisioning component offers 3 security versions.
             The example offers a choice between security version 1 and 2.
+            This test firmware also offers security version 0.
+
+        config EXAMPLE_PROV_SECURITY_VERSION_0
+            bool "Security version 0 (no security, test only)"
+            select ESP_PROTOCOMM_SUPPORT_SECURITY_VERSION_0
+            help
+                Plain-text provisioning: no key exchange, no proof-of-possession
+                and no encryption. Never use it outside testing.
+
+                The upstream example only offers security versions 1 and 2;
+                this test firmware adds version 0 to exercise Security0 in
+                esp_provisioning_ble (PR #31):
+                https://github.com/ESP-Provisioning-BLE/esp_provisioning_ble/pull/31
 
         config EXAMPLE_PROV_SECURITY_VERSION_1
             bool "Security version 1"
